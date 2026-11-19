@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/DepthAnything/Depth-Anything-V2",
+  "commit": "a561b849ebae10a6f5ef49e26c83cbbcd36c71bf",
+  "implementation": "metric_depth",
+  "checkpoint": "depth_anything_v2_metric_hypersim_vits.pth",
+  "checkpoint_source": "https://huggingface.co/depth-anything/Depth-Anything-V2-Metric-Hypersim-Small/resolve/main/depth_anything_v2_metric_hypersim_vits.pth",
+  "sha256": "b782898d8a3e8be1f639de33837ed85e9b4b73e40f8f5e5cd99067588d722545",
+  "encoder": "vits",
+  "max_depth_m": 20,
+  "input_size": 294,
+  "global_scale_applied": false,
+  "camera_metric_accuracy_validated": false
+}

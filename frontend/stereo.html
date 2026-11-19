@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JETANK 양안 Depth</title>
+<style>
+body{background:#101827;color:#edf3ff;font:16px system-ui;margin:0}main{max-width:1200px;margin:auto;padding:24px}
+.views{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px}
+.comparison{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.comparison img{width:min(100%,34.67vh);margin-inline:auto}
+.comparison #left,.comparison #right{width:calc(min(100%,34.67vh) * var(--crop-width,1));aspect-ratio:auto}
+.comparison figure{padding:8px}
+.depth-view{max-width:400px;margin-top:10px}
+main h1{margin:0 0 8px}
+figure{margin:0;background:#1b2740;padding:12px;border-radius:12px}figcaption{margin-bottom:8px}
+img{display:block;width:100%;aspect-ratio:4/3;background:#080e18}#left{cursor:crosshair}
+button,input{font:inherit;padding:8px 12px;border:1px solid #627695;border-radius:6px}
+button{background:#295bc4;color:white;cursor:pointer}button:disabled{opacity:.5;cursor:default}
+form,.controls{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0}
+</style>
+<main>
+  <h1>JETANK 양안 Depth</h1>
+  <p id="calibration-label" hidden></p>
+  <p id="preview-status" role="status">카메라 연결 중…</p>
+  <div class="controls">
+    <label><input id="vertical-only" type="checkbox"> 세로 이동만 보기</label>
+    <label id="vertical-control" hidden>왼쪽 영상 이동(px) <input id="vertical-shift" type="number" value="-62" step="1"></label>
+  </div>
+  <div id="capture-controls" hidden>
+    <button id="capture-board" type="button">보정 사진 촬영</button>
+    <p id="capture-result" role="status">마커 12개가 양쪽에 들어오면 보드를 고정하고 촬영하세요.</p>
+  </div>
+  <div class="views comparison">
+    <figure><figcaption>왼쪽 카메라 · 보정 전</figcaption><img id="raw_left" alt="왼쪽 원본 영상"></figure>
+    <figure><figcaption>오른쪽 카메라 · 보정 전</figcaption><img id="raw_right" alt="오른쪽 원본 영상"></figure>
+    <figure><figcaption id="left-caption">왼쪽 정렬 영상 · 측정할 표면 클릭</figcaption><img id="left" alt="왼쪽 영상"></figure>
+    <figure><figcaption id="right-caption">오른쪽 정렬 영상</figcaption><img id="right" alt="오른쪽 영상"></figure>
+  </div>
+  <figure class="depth-view"><figcaption>양안 Depth · 검정은 측정 불가</figcaption><img id="depth" alt="Depth 영상"></figure>
+  <h2 id="reading" aria-live="off">측정 대기</h2>
+  <div class="controls"><button id="toggle" type="button">화면 고정</button><span id="status" role="status"></span></div>
+  <form id="save">
+    <label>실측 직선거리(cm) <input id="actual" type="number" min="0.1" max="300" step="any" required></label>
+    <button id="save-button" disabled>실측 비교 저장</button>
+  </form>
+  <p id="saved" role="status"></p>
+</main>
+<script>
+const el = id => document.getElementById(id);
+let x = 320, y = 240, running = true, current = null, saving = false;
+let previewCrop = [0, 0, 640, 480], imageSize = [640, 480];
+const initialShift = new URLSearchParams(location.search).get('vertical');
+if (initialShift !== null && Number.isInteger(Number(initialShift)) && Math.abs(Number(initialShift)) < 480) {
+  el('vertical-shift').value = initialShift;
+  el('vertical-only').checked = true;
+}
+function previewUrl() {
+  if (!el('vertical-only').checked) return '/preview';
+  const shift = Math.trunc(el('vertical-shift').valueAsNumber || 0);
+  const limit = imageSize[1]-1;
+  return '/preview?vertical=' + Math.max(-limit, Math.min(limit, shift));
+}
+function updatePreviewLabels() {
+  const vertical = el('vertical-only').checked;
+  el('vertical-control').hidden = !vertical;
+  el('left-caption').textContent = vertical ? '왼쪽 영상 · 세로 이동' : '왼쪽 정렬 영상 · 측정할 표면 클릭';
+  el('right-caption').textContent = vertical ? '오른쪽 영상 · 비교 기준' : '오른쪽 정렬 영상';
+  el('left').style.cursor = vertical ? 'default' : 'crosshair';
+}
+el('vertical-only').onchange = updatePreviewLabels;
+updatePreviewLabels();
+async function post(path, body) {
+  const response = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body), signal:AbortSignal.timeout(path === '/frame' ? 15000 : 5000)});
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error);
+  return result;
+}
+async function update() {
+  if (running) {
+    try {
+      const frame = await post('/frame', {x,y});
+      if (running && x === frame.x && y === frame.y) {
+        el('depth').src = 'data:image/jpeg;base64,' + frame.depth;
+        current=frame;
+        el('save-button').disabled=saving;
+        el('reading').textContent=frame.range_cm===null ? '측정 불가' :
+          `직선거리 ${frame.range_cm.toFixed(2)} cm · 깊이 Z ${frame.depth_z_cm.toFixed(2)} cm`;
+        const timing=frame.compute_ms === undefined ? `수신·계산 ${frame.elapsed_ms} ms` :
+          `영상 수신 ${frame.receive_ms} ms · 계산 ${frame.compute_ms} ms`;
+        el('status').textContent=`${frame.matcher ?? 'SGBM'} · 유효 픽셀 ${Math.round(frame.valid_fraction*100)}% · ${timing}`;
+      }
+    } catch (error) {
+      if (running) {
+        el('status').textContent=error.message;
+        el('reading').textContent='Depth 갱신 대기';
+        el('depth').removeAttribute('src');
+        current=null;
+        el('save-button').disabled=true;
+      }
+    }
+  }
+  setTimeout(update, running ? 60 : 250);
+}
+async function updatePreview() {
+  if (running) {
+    const views = ['raw_left', 'raw_right', 'left', 'right'];
+    try {
+      const url = previewUrl();
+      const response = await fetch(url, {signal: AbortSignal.timeout(5000)});
+      const frame = await response.json();
+      if (!response.ok) throw new Error(frame.error);
+      if (running && url === previewUrl()) {
+        views.forEach(view => { el(view).src = 'data:image/jpeg;base64,' + frame[view]; });
+        previewCrop = frame.preview_crop ?? previewCrop;
+        imageSize = frame.image_size ?? imageSize;
+        for (const view of ['left','right']) {
+          el(view).style.setProperty('--crop-width', previewCrop[2] / imageSize[0]);
+        }
+        el('calibration-label').textContent = frame.calibration_label ?? '';
+        el('calibration-label').hidden = !frame.calibration_label;
+        el('capture-controls').hidden = !frame.aruco_capture;
+        el('preview-status').textContent = '카메라 실시간 갱신 중';
+      }
+    } catch {
+      if (running) {
+        views.forEach(view => el(view).removeAttribute('src'));
+        el('preview-status').textContent = 'JETANK 영상 연결 끊김 · 재연결 중';
+      }
+    }
+  }
+  setTimeout(updatePreview, 120);
+}
+el('capture-board').onclick=async () => {
+  const button=el('capture-board');
+  button.disabled=true;
+  el('capture-result').textContent='좌우 마커 확인 중…';
+  try {
+    const result=await post('/capture-board', {});
+    const counts=`왼쪽 ${result.markers[0]}/12 · 오른쪽 ${result.markers[1]}/12 · 저장 ${result.total}쌍`;
+    const message={saved:'저장 완료',incomplete:'보드 전체를 두 카메라에 보여 주세요',
+      duplicate:'기존 사진과 비슷합니다. 보드 위치나 기울기를 바꿔 주세요'}[result.status];
+    el('capture-result').textContent=`${message} · ${counts}`;
+  } catch (error) {
+    el('capture-result').textContent=error.message;
+  } finally {
+    button.disabled=false;
+  }
+};
+el('left').onclick=event=>{
+  if (saving || el('vertical-only').checked || !el('left').naturalWidth) return;
+  const box=event.currentTarget.getBoundingClientRect();
+  const [left, top, width, height]=previewCrop;
+  x=Math.min(imageSize[0]-11, Math.max(10, left+Math.floor((event.clientX-box.left)*width/box.width)));
+  y=Math.min(imageSize[1]-11, Math.max(10, top+Math.floor((event.clientY-box.top)*height/box.height)));
+  current=null;
+  el('save-button').disabled=true;
+  el('reading').textContent='선택한 위치 계산 중…';
+  setRunning(true);
+};
+function setRunning(value) {
+  running=value;
+  el('preview-status').textContent=value ? '카메라 연결 중…' : '카메라 화면 고정';
+  el('toggle').textContent=running ? '화면 고정' : '다시 재생';
+}
+el('toggle').onclick=()=>{
+  if (saving) return;
+  if (!running) {
+    current=null;
+    el('save-button').disabled=true;
+  }
+  setRunning(!running);
+};
+el('save').onsubmit=async event=>{
+  event.preventDefault();
+  if (saving || !current || current.x !== x || current.y !== y) return;
+  const frame=current;
+  saving=true;
+  setRunning(false);
+  el('save-button').disabled=true;
+  try {
+    const record=await post('/save',{token:frame.token,actual_cm:el('actual').valueAsNumber});
+    const error=record.error_cm===null ? '측정 불가 프레임' : `오차 ${record.error_cm.toFixed(2)} cm`;
+    el('saved').textContent=`저장 완료 · ${error} · ${record.folder}`;
+  } catch (error) {
+    el('saved').textContent=error.message;
+  } finally {
+    saving=false;
+    el('save-button').disabled=false;
+  }
+};
+update();
+updatePreview();
+</script>
+</html>

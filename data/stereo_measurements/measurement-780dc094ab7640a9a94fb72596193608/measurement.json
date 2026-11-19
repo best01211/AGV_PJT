@@ -1,0 +1,12 @@
+{
+  "x": 320,
+  "y": 240,
+  "valid_fraction": 1.0,
+  "range_cm": 72.44310760498047,
+  "depth_z_cm": 72.40717315673828,
+  "pair_id": "70d064120240446db29c28e5ae2dfc1d:7233",
+  "grab_gap_ms": 31.969,
+  "elapsed_ms": 437,
+  "actual_cm": 70.0,
+  "error_cm": 2.4431076049804688
+}

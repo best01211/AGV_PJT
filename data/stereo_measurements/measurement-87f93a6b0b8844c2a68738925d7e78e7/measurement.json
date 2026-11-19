@@ -1,0 +1,11 @@
+{
+  "x": 320,
+  "y": 240,
+  "valid_fraction": 0.18820861678004536,
+  "range_cm": null,
+  "pair_id": "bf637cf5529a47f4848fe9c07c0c8a8f:10238",
+  "grab_gap_ms": 35.961,
+  "elapsed_ms": 830,
+  "actual_cm": 60.0,
+  "error_cm": null
+}

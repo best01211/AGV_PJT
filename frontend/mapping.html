@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b26">
+  <title>ROVE · AGV 탐색 관제</title>
+  <link rel="stylesheet" href="/static/console.css?v=tablet">
+  <link rel="stylesheet" href="/static/mapping.css?v=tablet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="top-inner">
+      <a class="brand" href="/mapping"><span class="brand-mark" aria-hidden="true">◈</span><strong>ROVE</strong><span>운영 콘솔</span></a>
+      <nav aria-label="관제 메뉴"><a href="/mapping" aria-current="page">탐색 관제</a><a href="/">주행 설정</a><a href="/video">영상 분석</a></nav>
+      <span class="system-state"><i></i><span id="server-status">서버 확인 중</span></span>
+    </div>
+  </header>
+  <main>
+    <div class="page-heading">
+      <div><p class="eyebrow">JETANK <span>/</span> AGV-01</p><h1>AGV 탐색 관제</h1><p class="subtitle">지도 생성 과정과 로봇의 센서 관측을 확인합니다.</p></div>
+      <div class="mode-switch" role="group" aria-label="지도 입력 모드">
+        <button type="button" id="demo-mode" aria-pressed="true">시뮬레이션</button>
+        <button type="button" id="live-mode" aria-pressed="false">실측 관측</button>
+      </div>
+    </div>
+
+    <div class="workspace mapping-workspace">
+      <section class="card map-card" aria-labelledby="map-title">
+        <div class="card-head"><div><h2 id="map-title">탐색 지도</h2><p id="map-description">실내 테스트 구역 · 1층</p></div><span class="tag" id="map-badge">시뮬레이션</span></div>
+        <div class="map-stage" id="map-stage">
+          <canvas id="sensor-map" aria-label="탐색 영역과 로봇 자세를 표시하는 2차원 지도" role="img"></canvas>
+          <span class="north" aria-label="지도 위쪽은 양의 Y 방향">+Y <span>↑</span></span>
+          <div class="map-tools" role="group" aria-label="지도 배율">
+            <button type="button" id="zoom-in" aria-label="확대">+</button>
+            <button type="button" id="zoom-out" aria-label="축소">−</button>
+            <button type="button" id="zoom-fit" aria-label="지도 전체 보기">⌗</button>
+          </div>
+          <div class="map-empty" id="map-empty" hidden><strong>센서 지도 준비 중</strong><span>실측 지도 설정에서 새 지도를 생성하거나 저장된 지도를 불러오세요.</span></div>
+          <span class="scale" id="map-scale"></span>
+        </div>
+        <div class="map-footer">
+          <ul class="legend" aria-label="지도 범례">
+            <li><i class="free"></i>자유 증거</li><li><i class="uncertain"></i>불확실</li><li><i class="wall"></i>점유</li><li><i class="unknown"></i>미관측</li>
+            <li><i class="trail"></i>주행 궤적</li><li><i class="ultrasound"></i>초음파</li><li><i class="camera"></i>카메라 시야</li>
+          </ul>
+          <div class="layers"><label><input id="range-layer" type="checkbox" checked> 초음파</label><label><input id="camera-layer" type="checkbox" checked> 카메라 시야</label></div>
+        </div>
+      </section>
+
+      <aside class="side mapping-side">
+        <section class="card status-card" aria-labelledby="status-title">
+          <div class="card-head"><h2 id="status-title">탐색 진행</h2><span class="tag" id="exploration-status" role="status">일시정지</span></div>
+          <div class="status-body">
+            <div class="progress-heading"><span>관측 면적 비율</span><strong id="percentage">—</strong></div>
+            <progress id="coverage" max="100" value="0" aria-label="관측 면적 비율"></progress>
+            <p class="micro" id="coverage-context">관측된 셀 / 지도 전체 셀</p>
+            <dl class="metrics"><div><dt>수락 관측</dt><dd id="accepted">—</dd></div><div><dt>최근 관측</dt><dd id="updated">—</dd></div></dl>
+            <div class="demo-controls" id="demo-controls">
+              <button type="button" class="primary" id="play">탐색 재개</button>
+              <button type="button" id="restart">처음부터</button>
+            </div>
+            <p class="micro" id="live-hint" hidden>외부 수집기가 보낸 관측을 자동으로 반영합니다. 모터 제어는 시뮬레이션에서만 지원합니다.</p>
+          <div class="setup-actions live-map-actions" id="live-map-actions" hidden>
+            <button type="button" id="save-live-map">관측 지도 저장</button>
+            <a id="saved-map-to-drive" hidden>주행 설정에서 불러오기</a>
+          </div>
+          <p class="micro" id="live-save-status" role="status"></p>
+          </div>
+        </section>
+
+        <section class="card drive-card" aria-labelledby="drive-title">
+          <div class="card-head"><h2 id="drive-title">주행 제어</h2><span class="tag neutral">모의 제어</span></div>
+          <form id="drive-form" class="drive-body">
+            <p class="drive-state" id="drive-state">연결 확인 중</p>
+            <button type="button" id="drive-demo" hidden>예제 주행 지도 열기</button>
+            <label for="drive-destination">목적지</label>
+            <select id="drive-destination" disabled><option value="">지도 등록 대기</option></select>
+            <div class="drive-actions"><button type="submit" class="primary" id="drive-send" disabled>이동</button><button type="button" id="drive-stop" class="stop" disabled>모의 주행 정지</button></div>
+            <p id="drive-result" class="micro" role="status"></p>
+            <a href="/#destinations-settings">주행 위치 및 목적지 설정</a>
+          </form>
+        </section>
+
+        <section class="card sensor-card" aria-labelledby="sensor-title">
+          <div class="card-head"><div><h2 id="sensor-title">초음파 센서</h2><p id="sensor-description">가상 반사 거리</p></div><span class="tag neutral">4방향</span></div>
+          <div class="sensor-body">
+            <dl id="ranges">
+              <div><dt><i aria-hidden="true">↑</i>전방</dt><dd id="range-front">—</dd></div>
+              <div><dt><i aria-hidden="true">↓</i>후방</dt><dd id="range-rear">—</dd></div>
+              <div><dt><i aria-hidden="true">←</i>좌측</dt><dd id="range-left">—</dd></div>
+              <div><dt><i aria-hidden="true">→</i>우측</dt><dd id="range-right">—</dd></div>
+            </dl>
+            <p class="micro" id="pose-info">로봇 위치 수신 대기</p>
+            <p class="micro mapping-heading">방향각 <strong id="mapping-heading">—</strong> · 위쪽 0° · 시계방향</p>
+          </div>
+        </section>
+      </aside>
+      <section class="card camera-card" aria-labelledby="camera-title">
+        <div class="card-head"><div><h2 id="camera-title">전면 카메라</h2><p>영상 확인 · 카메라 위치는 현장 장착 순서에 맞춰 설정</p></div><span class="tag neutral">2채널</span></div>
+        <div class="feeds">
+          <figure id="camera-a"><figcaption><strong>전면 A</strong><span data-camera-status>연결 확인 중</span></figcaption><div class="feed"><img alt="전면 A 카메라 영상" hidden><span aria-hidden="true">▣</span></div><button type="button" data-camera-connect disabled>영상 연결</button></figure>
+          <figure id="camera-b"><figcaption><strong>전면 B</strong><span data-camera-status>연결 확인 중</span></figcaption><div class="feed"><img alt="전면 B 카메라 영상" hidden><span aria-hidden="true">▣</span></div><button type="button" data-camera-connect disabled>영상 연결</button></figure>
+        </div>
+      </section>
+    </div>
+
+    <details class="card setup">
+      <summary>실측 지도 설정</summary>
+      <div class="setup-body">
+        <div>
+          <label for="config">MapConfig JSON</label>
+          <textarea id="config" spellcheck="false">{
+  "frame_id": "map",
+  "width_m": 5,
+  "height_m": 4,
+  "resolution_m": 0.1,
+  "enable_free_updates": false,
+  "sensors": []
+}</textarea>
+          <p class="micro">실측 장착값을 입력하세요. 방향 표시는 <code>front</code>, <code>rear</code>, <code>left</code>, <code>right</code> ID를 사용합니다. 보정된 카메라 시야는 <code>camera_views</code>에 등록할 수 있습니다.</p>
+          <div class="setup-actions"><button type="button" id="initialize">빈 지도 생성</button><button type="button" class="stop" id="reset">실측 지도 초기화</button></div>
+        </div>
+        <div>
+          <h3>관측 입력과 지도 파일</h3>
+          <p>실측 수집기에서 <code>POST /api/mapping/observations</code>로 시간 동기화된 초음파와 외부 위치 추정값을 보내세요. 카메라 영상은 별도로 표시됩니다. <a href="/docs">API 문서</a></p>
+          <div class="setup-actions"><button type="button" id="save-map">서버에 저장</button><a id="saved-map-settings-to-drive" hidden>주행 설정에서 불러오기</a></div>
+          <label for="map-id">저장 지도 ID</label><input id="map-id" placeholder="32자리 지도 ID" maxlength="32" autocomplete="off">
+          <div class="setup-actions"><button type="button" id="load-map">ID로 불러오기</button></div>
+          <p id="map-message" role="status"></p>
+        </div>
+      </div>
+    </details>
+  </main>
+  <script src="/static/agv-pose.js"></script>
+  <script type="module" src="/static/mapping.js?v=agv-pose"></script>
+</body>
+</html>

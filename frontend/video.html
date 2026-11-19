@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b26">
+  <title>ROVE · 영상 분석</title>
+  <link rel="stylesheet" href="/static/console.css?v=tablet">
+  <link rel="stylesheet" href="/static/video.css?v=tablet">
+</head>
+<body>
+  <header class="topbar">
+    <div class="top-inner">
+      <a class="brand" href="/mapping"><span class="brand-mark" aria-hidden="true">◈</span><strong>ROVE</strong><span>운영 콘솔</span></a>
+      <nav aria-label="관제 메뉴"><a href="/mapping">탐색 관제</a><a href="/">주행 설정</a><a href="/video" aria-current="page">영상 분석</a></nav>
+      <span class="system-state"><i></i><span id="video-status" class="system-label">연결 대기</span></span>
+    </div>
+  </header>
+  <main>
+    <div class="page-heading">
+      <div><p class="eyebrow">JETANK <span>/</span> AGV-01</p><h1>영상 분석</h1><p class="subtitle">전면 카메라 영상과 깊이 추정 결과를 확인합니다.</p></div>
+    </div>
+    <div class="workspace">
+      <section class="card video-panel" aria-labelledby="rgb-title">
+        <div class="card-head"><div><h2 id="rgb-title">카메라 원본 영상</h2><p>전면 A · RGB</p></div><span class="tag neutral" id="resolution">수신 프레임 없음</span></div>
+          <div class="video-stage" id="video-stage"><img id="camera-image" alt="JETANK 카메라에서 수신한 영상" hidden>
+            <div class="video-placeholder" id="placeholder"><span>◎</span><strong>JETANK 영상 연결 대기</strong>
+              <p>영상 주소를 설정하고 연결 버튼을 눌러 주세요.</p>
+            </div><span class="stage-label">JETANK / RGB</span>
+          </div>
+          <div class="card-body video-body">
+            <div class="video-toolbar actions"><button class="primary" id="connect-video">영상 연결</button><button id="disconnect-video" class="secondary">연결 종료</button><button id="fullscreen-video" class="secondary">전체 화면</button>
+            </div>
+            <p id="video-message" role="status" aria-live="polite">설정 확인 중입니다.</p>
+            <section id="board-range" hidden>
+              <h3>C270 마커 거리</h3>
+              <p>마커 12개가 모두 보이면 측정하세요.</p>
+              <div class="video-toolbar actions"><button id="measure-board" type="button" disabled>마커 거리 측정</button>
+              </div>
+              <p id="board-result" role="status" aria-live="polite">6번 마커 중심까지 측정합니다.</p>
+            </section>
+            <section id="calibration-capture" hidden>
+              <h3>C270 렌즈 보정 촬영</h3>
+              <p>마커 12개가 모두 보이도록 두고, 매번 마커판의 위치나 각도를 바꿔 주세요.</p>
+              <div class="video-toolbar actions"><button id="capture-calibration" type="button" disabled>보정 사진 촬영</button><strong id="calibration-count"></strong>
+              </div>
+              <p id="calibration-message" role="status" aria-live="polite"></p>
+            </section>
+        </div>
+      </section>
+      <aside class="side">
+        <section class="card" aria-labelledby="connection-title">
+          <div class="card-head"><h2 id="connection-title">수신 정보</h2></div>
+          <div class="card-body video-body connection-card">
+<dl><div><dt>영상 설정</dt><dd id="configured">확인 중</dd></div><div><dt>전송 형식</dt><dd id="video-format">—</dd></div><div><dt>마지막 프레임</dt><dd id="last-frame">—</dd></div><div><dt>프레임 번호</dt><dd id="frame-number">—</dd></div><div><dt>모터 제어</dt><dd>Mock · 실제 제어 미연결</dd></div></dl><p>연결·종료는 서버의 공용 카메라 수신기에 적용됩니다. 다른 브라우저에서도 같은 영상 상태를 사용합니다.</p>
+          </div>
+        </section>
+        <details class="card video-disclosure">
+          <summary>연결 설정 방법</summary>
+          <div class="card-body video-body setup-panel">
+<ol><li>기존 영상 프로그램에서 전체 URL과 형식을 확인합니다.</li><li>서버 실행 전 환경변수에 주소와 형식을 설정합니다.</li><li>서버를 재시작하고 ‘영상 연결’을 누릅니다.</li></ol><pre>$env:JETANK_CAMERA_URL = '확인한 전체 영상 URL'
+$env:JETANK_CAMERA_FORMAT = 'mjpeg'</pre><p>MJPEG 스트림 또는 JPEG 스냅샷(<code>snapshot</code>)을 지원합니다. RTSP·WebRTC·웹페이지 주소는 직접 지원하지 않습니다.</p><p>현재 확인된 IP: <b>70.12.231.81</b><br>확인된 영상: <code>:8765/video</code> · MJPEG</p>
+          </div>
+        </details>
+      </aside>
+    </div>
+    <section class="card depth-panel" aria-labelledby="depth-title">
+      <div class="card-head"><div><h2 id="depth-title">카메라 보정 및 Depth</h2><p>거리 검증 목표는 1m 이내 ±1cm입니다.</p></div><span class="tag depth-warning">거리 정확도 검증 미달</span></div>
+      <div class="card-body video-body">
+          <p id="depth-calibration">카메라 보정 상태 확인 중</p>
+          <div class="depth-grid">
+            <div>
+              <h3 id="depth-input-title">렌즈 왜곡 보정 · alpha=0</h3>
+              <div class="depth-stage target-stage" id="target-stage"><span class="depth-placeholder" aria-hidden="true">보정 영상 대기</span><img id="undistorted-image" alt="렌즈 왜곡 보정 영상" hidden>
+                <div id="target-box" hidden>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 id="depth-model-name">보정 카메라 내참수 기반 Depth</h3>
+              <div class="depth-stage"><span class="depth-placeholder" aria-hidden="true">깊이 영상 대기</span><img id="depth-image" alt="거리 정확도가 검증되지 않은 모델 깊이 시각화" hidden>
+              </div>
+              <p><span id="depth-color-scale">직선거리 시각화 0~1m · 가까움: 빨강 / 멂: 파랑</span><br>표시 범위 이상은 같은 먼 거리 색 · 회색: 무효 · 흰 사각형: 중앙 ROI</p>
+            </div>
+          </div>
+          <div class="video-toolbar actions"><button class="primary" id="start-depth">Depth 시작</button><button id="stop-depth" class="secondary">Depth 종료</button><a id="download-depth" href="/api/depth/frame/array" hidden>최신 배열 저장</a>
+          </div>
+          <p id="depth-message" role="status" aria-live="polite">상태 확인 중</p>
+          <p>모델 원본 중앙 광축 깊이 Z</p><strong id="depth-center">—</strong>
+          <details><summary>이전 벽 보정 참고값 (현재 모델에는 적용하지 않음)</summary>
+            <p>다점 보정 중앙 추정</p><strong id="depth-correction">—</strong>
+            <p>7점 교차검사 평균 오차 약 5.1cm · 최대 약 9.6cm. 통계적 오차 보장값이나 집기 허용 판정이 아닙니다. 다른 물체에는 그대로 적용할 수 없습니다.</p>
+          </details>
+          <p id="depth-timing"></p>
+          <p>카메라별 보정 파일을 적용한 뒤 실측 기록으로 ±1cm 기준을 검증합니다.</p>
+          <section class="target-measurement">
+            <h3>정면 물체 영역 측정</h3>
+            <p>표적 화면 고정을 누른 뒤 보정 영상에서 물체 안쪽만 드래그하세요. 책상·손·배경을 포함하면 값이 섞일 수 있습니다. 고정 프레임은 2분간 보관합니다.</p>
+            <div class="video-toolbar actions"><button id="freeze-target" type="button" disabled>표적 화면 고정</button><button id="resume-target" type="button" class="secondary">실시간으로 돌아가기</button>
+            </div><label><input id="wall-trial-enabled" type="checkbox"> 같은 나무색 벽면에 시험 보정 적용</label>
+            <p id="wall-trial-result" role="status"></p>
+            <p id="target-result" role="status">표적을 선택하지 않았습니다. 아래 기록은 기본 중앙 영역입니다.</p>
+          </section>
+          <form id="measurement-form">
+            <h3>실측 거리와 비교 기록</h3><label>기록할 측정 영역<select id="measurement-mode"><option value="target" selected>물체 영역 · 화면 고정 후 드래그 필수</option><option value="center">기본 중앙 영역 · 벽 거리 검증용</option></select></label>
+            <div class="measurement-inputs"><label>대상·장면<input id="measurement-scene" maxlength="60" required placeholder="예: 흰 판 / 정면"></label><label>렌즈 중심→표적 직선 실측거리<input id="measurement-distance" type="number" min="0.01" max="20" step="any" required></label><label>단위<select id="measurement-unit"><option value="m" selected>m (미터)</option><option value="cm">cm (센티미터)</option></select></label><button id="save-measurement" class="primary" type="submit" disabled>현재 결과 기록</button><button id="save-batch" type="submit" class="secondary" disabled>새 프레임 8장 기록</button>
+            </div>
+            <p id="measurement-ready" role="status"></p>
+            <p>물체 영역 모드에서는 반드시 표적을 선택해야 기록됩니다. 벽의 중앙 거리를 기록하려면 측정 영역을 중앙 모드로 명시적으로 바꾸세요. 실제 거리를 입력하세요. CSV·원본 영상·보정 영상·깊이 배열이 PC의 카메라별 측정 폴더에 저장됩니다.</p>
+            <p id="measurement-preview" role="status">입력한 거리의 m·cm 환산값을 여기서 확인하세요.</p>
+            <p id="measurement-message" role="status"></p>
+          </form>
+      </div>
+    </section>
+  </main>
+  <script src="/static/video.js?v=console"></script>
+  <script src="/static/depth.js?v=tablet"></script>
+</body>
+</html>

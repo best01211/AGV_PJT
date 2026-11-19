@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b26">
+  <title>ROVE · 주행 설정</title>
+  <link rel="stylesheet" href="/static/console.css?v=tablet">
+  <link rel="stylesheet" href="/static/operator.css?v=drag-start-2">
+</head>
+<body class="operator-view">
+  <header class="topbar">
+    <div class="top-inner">
+      <a class="brand" href="/mapping"><span class="brand-mark" aria-hidden="true">◈</span><strong>ROVE</strong><span>운영 콘솔</span></a>
+      <nav aria-label="관제 메뉴"><a href="/mapping">탐색 관제</a><a href="/" aria-current="page">주행 설정</a><a href="/video">영상 분석</a></nav>
+      <span class="system-state"><i></i><span id="operator-server-status" class="system-label">서버 확인 중</span></span>
+    </div>
+  </header>
+  <main>
+    <div class="page-heading">
+      <div><p class="eyebrow">JETANK <span>/</span> AGV-01</p><h1>주행 설정</h1><p class="subtitle">주행 지도에서 로봇 위치를 확인하고 목적지를 지정합니다.</p></div>
+      <span class="tag neutral">시뮬레이션 모드</span>
+    </div>
+  <section class="card drive-status" aria-labelledby="drive-status-label">
+    <div>
+      <p id="drive-status-label">현재 상태</p>
+      <strong id="status" role="status">연결 확인 중</strong>
+      <span id="active-destination"></span>
+    </div>
+    <button id="stop" class="stop" type="button" disabled><span aria-hidden="true">■</span> <span id="stop-label">즉시 정지</span></button>
+    <p id="stop-feedback" role="status" hidden></p>
+  </section>
+    <div class="workspace">
+      <section class="card operator-map" id="destinations-settings" aria-labelledby="map-title">
+        <div class="card-head">
+          <div><h2 id="map-title">주행 위치 및 목적지 설정</h2><p>시작 자세, 도착 지점, 구역을 관리합니다.</p></div>
+          <dl class="position-readout"><div><dt>로봇 좌표 (m)</dt><dd id="position">—</dd></div><div><dt>방향각</dt><dd id="nav-heading">—</dd></div></dl>
+        </div>
+        <div id="map-block" class="map-block" hidden><p id="map-block-message" role="status"></p><button type="button" data-condition="clear">모의 장애 해제</button></div>
+        <details id="initial-pose-tools" class="initial-pose-tools">
+          <summary>초기 위치·방향 설정</summary>
+          <div class="initial-pose-body">
+            <p id="initial-pose-help" class="micro">지도에서 시작점 마커를 끌어 옮기거나, 지도를 누르거나, X·Y 좌표(m)를 입력하세요. 방향은 위쪽 0°부터 시계방향입니다.</p>
+            <p id="initial-pose-availability" class="micro"></p>
+            <form id="initial-pose-form" aria-describedby="initial-pose-help">
+              <fieldset class="editor-fields initial-pose-fields" disabled>
+                <legend class="sr-only">초기 위치·방향</legend>
+                <label>시작 X (m)<input id="initial-pose-x" type="number" step="any" required></label>
+                <label>시작 Y (m)<input id="initial-pose-y" type="number" step="any" required></label>
+                <label>초기 방향각 (°)<input id="initial-pose-heading" type="number" min="0" max="359" step="1" required></label>
+                <button type="submit" class="primary">초기 상태 적용</button>
+                <div class="actions initial-pose-directions" role="group" aria-label="방향 빠른 선택">
+                  <button type="button" data-initial-heading="0">위 0°</button>
+                  <button type="button" data-initial-heading="90">오른쪽 90°</button>
+                  <button type="button" data-initial-heading="180">아래 180°</button>
+                  <button type="button" data-initial-heading="270">왼쪽 270°</button>
+                </div>
+              </fieldset>
+            </form>
+            <p id="initial-pose-status" class="micro" role="status"></p>
+          </div>
+        </details>
+        <div class="operator-map-stage">
+          <canvas id="map" width="900" height="480" aria-label="주행 지도, 로봇의 모의 위치와 경로" role="img"></canvas>
+          <button id="initial-pose-marker" type="button" aria-label="시작점 마커 이동" aria-describedby="initial-pose-marker-help" hidden>
+            <span class="initial-pose-pin" aria-hidden="true">⠿</span><span class="initial-pose-pin-label" aria-hidden="true">시작점</span>
+          </button>
+          <span id="initial-pose-marker-help" class="sr-only">마우스나 손가락으로 끌거나 키보드 방향키로 1cm씩 움직이세요. 초기 상태 적용을 누르면 확정됩니다.</span>
+        </div>
+        <div class="card-body map-bottom">
+          <p id="map-legend" class="micro">지도를 불러오면 로봇 위치가 표시됩니다.</p>
+          <details id="place-tools">
+            <summary>장소 및 구역 관리</summary>
+            <div class="place-settings">
+              <button id="add-destination" type="button" aria-controls="destination-form" aria-expanded="false" disabled>장소 또는 구역 추가</button>
+              <form id="destination-form" class="editor-fields" hidden>
+                <label>등록 유형<select id="destination-type"><option value="point">도착 지점</option><option value="zone">구역</option></select></label>
+                <label>목적지 이름<input id="destination-name" maxlength="40" placeholder="예를 들어 작업대" required></label>
+                <label>열<input id="destination-col" type="number" min="0" step="1"></label>
+                <label>행<input id="destination-row" type="number" min="0" step="1"></label>
+                <button id="toggle-zone-cell" type="button" hidden>이 칸 선택 또는 해제</button>
+                <button id="save-destination" class="primary" type="submit">등록</button>
+              </form>
+              <p id="destination-result" class="micro" role="status"></p>
+              <form id="remove-place-form" class="editor-fields" hidden>
+                <label>삭제할 장소 또는 구역<select id="remove-place" required></select></label>
+                <button id="remove-place-button" class="stop" type="submit" disabled>선택한 항목 삭제</button>
+              </form>
+              <p id="remove-place-result" class="micro" role="status"></p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section class="card operator-controls" aria-labelledby="drive-title">
+        <div class="card-head"><h2 id="drive-title">어디로 이동할까요?</h2></div>
+        <div class="card-body control-body">
+      <div id="demo-start" hidden>
+        <p>아직 사용할 지도가 없습니다. 체험 지도를 열어 주행을 시작할 수 있습니다.</p>
+        <button id="start-demo" class="primary" type="button">체험 시작</button>
+        <p id="demo-error" role="status" hidden></p>
+      </div>
+      <fieldset id="command-controls" disabled hidden>
+        <legend class="sr-only">로봇 이동</legend>
+        <p id="place-hint">장소 버튼을 누르면 바로 이동합니다.</p>
+        <div id="destinations"></div>
+        <section id="trial-controls" class="trial-controls" aria-labelledby="trial-title" hidden>
+          <h3 id="trial-title">1m × 1m 예비 주행</h3>
+          <div class="quick">
+            <button type="button" data-trial-motion="forward">10cm 직진</button>
+            <button type="button" data-trial-motion="left">왼쪽 90도 회전</button>
+            <button type="button" data-trial-motion="right">오른쪽 90도 회전</button>
+          </div>
+          <p>버튼을 한 번 누를 때마다 한 동작을 수행합니다. 실제 JETANK 모터는 연결되어 있지 않습니다.</p>
+        </section>
+        <form id="command-form">
+          <label for="command">문장으로 요청하기</label>
+          <textarea id="command" maxlength="200" required></textarea>
+          <p id="command-hint" class="muted"></p>
+          <button id="send" class="primary" type="submit">명령 보내기</button>
+        </form>
+        <div class="quick"><button type="button" data-command="현재 위치 알려줘">현재 위치 확인</button></div>
+      </fieldset>
+      <div id="result" role="status" aria-live="polite" hidden></div>
+      <details class="command-history">
+        <summary>최근 명령</summary>
+        <ol id="history"></ol>
+      </details>
+        </div>
+      </section>
+    </div>
+    <div class="section-stack">
+      <details class="card operator-disclosure" id="sensor-map-import">
+        <summary>관측 지도를 주행 지도에 등록</summary>
+        <div class="card-body sensor-import">
+          <p>저장한 지도 ID를 입력하세요. 등록에 20 × 20cm AGV 외형과 추가 여유 공간을 적용합니다.</p>
+          <form id="sensor-preview-form">
+            <fieldset class="editor-fields sensor-fields">
+              <legend class="sr-only">관측 지도 불러오기</legend>
+              <label class="sensor-id-field">저장 지도 ID<input id="sensor-map-id" required minlength="32" maxlength="32" pattern="[a-fA-F0-9]{32}" autocomplete="off"></label>
+              <label>추가 여유 (m)<input id="sensor-margin" type="number" min="0" max="5" step="any" value="0.05" required></label>
+              <button id="sensor-preview-button" type="submit" class="primary">불러와 미리보기</button>
+            </fieldset>
+          </form>
+          <p id="sensor-preview-status" class="micro" role="status"></p>
+          <section id="sensor-navigation-draft" hidden aria-labelledby="sensor-draft-title">
+            <div class="sensor-draft-heading"><h3 id="sensor-draft-title">변환 지도</h3><span class="tag neutral">모의 주행용</span></div>
+            <p id="sensor-preview-stats" class="micro"></p>
+            <canvas id="sensor-navigation-canvas" width="900" height="420" role="img" aria-label="변환한 주행 지도 미리보기"></canvas>
+            <ul class="legend sensor-legend" aria-label="변환 지도 범례">
+              <li><i class="free"></i>통행 가능</li><li><i class="wall"></i>점유</li><li><i class="uncertain"></i>불확실</li><li><i class="unknown"></i>미관측</li><li><i class="buffer"></i>여유 공간 차단</li>
+            </ul>
+            <p id="sensor-point-help" class="micro">지도를 누르거나 X·Y 좌표(m)를 입력하세요. 시작점은 입력 좌표에, 목적지는 선택한 좌표가 속한 칸의 중심에 등록됩니다.</p>
+            <form id="sensor-point-form" aria-describedby="sensor-point-help">
+              <fieldset class="editor-fields sensor-fields">
+                <legend class="sr-only">시작점과 목적지 지정</legend>
+                <label>지정할 항목<select id="sensor-point-kind"><option value="start">시작점</option><option value="destination">목적지</option></select></label>
+                <label id="sensor-point-name-field" hidden>목적지 이름<input id="sensor-point-name" maxlength="40"></label>
+                <label>X (m)<input id="sensor-x" type="number" step="any" required></label>
+                <label>Y (m)<input id="sensor-y" type="number" step="any" required></label>
+                <button id="sensor-set-point" type="submit">시작점 지정</button>
+              </fieldset>
+            </form>
+            <div class="editor-fields sensor-initial-pose">
+              <p id="sensor-start-label" class="micro">시작점 미지정</p>
+              <label>초기 방향각 (°)<input id="sensor-start-heading" type="number" min="0" max="359" step="1" value="90" required></label>
+            </div>
+            <ul id="sensor-destinations" aria-label="지정한 목적지"></ul>
+            <p id="sensor-point-status" class="micro" role="status"></p>
+            <div class="actions">
+              <button id="sensor-register" type="button" class="primary" disabled>이 지도로 모의 주행 준비</button>
+              <a id="sensor-drive-link" href="#drive-title" hidden>등록된 목적지로 이동</a>
+            </div>
+            <p id="sensor-register-status" class="micro" role="status"></p>
+          </section>
+        </div>
+      </details>
+      <details class="card operator-disclosure" id="navigation-map-settings">
+        <summary>지도 설정</summary>
+        <div class="card-body">
+  <p>현재 지도 <span id="map-frame">지도 등록 대기</span></p>
+  <div class="quick">
+    <button id="create-map" aria-controls="map-editor" aria-expanded="false">지도 만들기</button>
+    <button id="choose-map">지도 불러오기</button>
+    <button id="demo-map">예제 지도 불러오기</button>
+    <button id="maze-map">복잡한 테스트 맵 불러오기</button>
+    <button id="trial-map">1m × 1m 예비 주행 지도 불러오기</button>
+    <button id="download-map" disabled>현재 지도 저장</button>
+  </div>
+  <input id="map-file" type="file" accept=".json,application/json" hidden>
+  <p id="map-result" role="status">시작점과 목적지가 있는 지도를 등록해 주세요.</p>
+  <section id="map-editor" hidden aria-labelledby="editor-title">
+    <h3 id="editor-title">격자 지도 만들기</h3>
+    <form id="grid-form" class="editor-fields">
+      <label>열<input id="grid-cols" type="number" min="2" max="30" value="8" required></label>
+      <label>행<input id="grid-rows" type="number" min="2" max="30" value="6" required></label>
+      <button type="submit">빈 격자로 초기화</button>
+    </form>
+    <div class="editor-fields">
+      <label>지도 이름<input id="grid-name" maxlength="60" value="실내 주행 지도"></label>
+      <label>한 칸 크기 (m)<input id="grid-resolution" type="number" min="0.02" max="1" step="0.01" value="0.5"></label>
+      <label>초기 방향각 (°)<input id="grid-start-heading" type="number" min="0" max="359" step="1" value="90" required></label>
+      <label>칸에 지정할 항목
+        <select id="grid-tool">
+          <option value="start">로봇 시작점</option>
+          <option value="destination">목적지</option>
+          <option value="wall">장애물</option>
+          <option value="unknown">미확인</option>
+          <option value="free">빈 칸으로 지우기</option>
+        </select>
+      </label>
+      <label id="grid-destination-field" hidden>목적지 이름<input id="grid-destination" maxlength="40" placeholder="예: 출고대"></label>
+    </div>
+    <p id="editor-help">항목을 고르고 칸을 클릭하세요. 로봇 시작점과 이름이 있는 목적지를 하나 이상 지정해야 합니다. 왼쪽 아래가 [0, 0]입니다.</p>
+    <div class="grid-scroll"><div id="editor-grid" aria-label="편집할 지도 격자" aria-describedby="editor-help"></div></div>
+    <div class="quick"><button id="register-map" class="primary">이 지도로 시작</button></div>
+    <p id="editor-result" role="status"></p>
+  </section>
+        </div>
+      </details>
+      <details class="card operator-disclosure">
+        <summary>상세 상태 및 시험</summary>
+        <div class="card-body diagnostics-body">
+        <h3>연결 및 주행 정보</h3>
+        <dl class="diagnostics"><dt>서버 연결</dt><dd id="connection">연결 확인 중</dd>
+        </dl>
+        <h3>주행 상태 및 기록</h3>
+        <p id="explanation" role="status" aria-live="polite">상태 확인 중</p><small id="evidence"></small>
+        <h3>모의 장애 시험</h3>
+        <p>아래 버튼은 가상 장애 조건입니다. 실제 센서나 안전 장치를 제어하지 않습니다. 각 버튼은 표시된 조건 하나를 적용하며, 정상 복원 후에도 이동 명령을 다시 입력해야 합니다.</p>
+        <div class="quick"><button data-condition="obstacle">모의 장애물 발생</button><button data-condition="localization">모의 위치 추정 실패</button><button data-condition="clear">모두 정상으로 복원</button><button data-command="왜 멈췄어?">상태 설명 조회</button>
+        </div>
+        <p id="conditions">조건 확인 중</p>
+        <h3>주행 이벤트 <small>최대 100개</small>
+        </h3>
+        <ol id="events">
+        </ol>
+<section><div class="diagnostic-heading"><h3>센서 & 영상</h3><span>하드웨어 연동 대기</span></div><div class="sensor-grid"><div>RGB 카메라<strong><a href="/video">영상 분석 열기</a></strong></div><div>Depth Anything<strong>추론 인터페이스 미연결</strong></div><div>초음파 전 / 후 / 좌 / 우<strong>— / — / — / —</strong></div><div>위치 추정<strong>시뮬레이션 · 실측 신뢰도 없음</strong></div></div></section>
+<nav class="settings-links" aria-label="관련 페이지">
+  <a href="/video">실시간 영상</a>
+  <a href="/mapping">탐색 관제</a>
+  <a href="/about/">프로젝트 소개</a>
+</nav>
+
+        </div>
+      </details>
+    </div>
+  </main>
+  <script src="/static/agv-pose.js"></script>
+  <script src="/static/app.js?v=drag-start"></script>
+  <script src="/static/map-editor.js?v=initial-pose"></script>
+  <script src="/static/sensor-map-import.js?v=metric-pose"></script>
+</body>
+</html>

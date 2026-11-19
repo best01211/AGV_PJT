@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "encoder": "vitb",
+  "input_size": 294,
+  "scene": "나무색 벽, 중앙",
+  "sample_ids": [
+    "a3cfd7ed7d8e4c34b72031e7b12877c7",
+    "c02070a4367c4c8dadf73ae1e3c73cb7",
+    "a25fcd9ab10b4fd7ac2f731a706b757a",
+    "80ebacbfa58845b992925a806e83eb0c"
+  ],
+  "scale": 0.5280470238204232,
+  "offset_m": -0.4479082103108307,
+  "prediction_domain_m": [
+    1.4331848621368408,
+    3.15793776512146
+  ],
+  "ground_truth_domain_m": [
+    0.3,
+    1.2
+  ],
+  "training_error": {
+    "mae_m": 0.026290059098998883,
+    "max_absolute_error_m": 0.052580118197997905
+  },
+  "leave_one_out_diagnostic": {
+    "mae_m": 0.06285876300279926,
+    "max_absolute_error_m": 0.12416560254868636
+  },
+  "enabled": false,
+  "metric_validated": false,
+  "usable_for_control": false,
+  "apply_to_dense_depth": false,
+  "warning": "Same four samples used to select the model and fit the profile. LOO is not independent validation. Center ROI, recorded scene and calibrated stream only; no extrapolation."
+}

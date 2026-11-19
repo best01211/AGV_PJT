@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+tmp/
+data/maps/
+.depth-venv/
+.depth-model/
+data/depth_evaluation/
+data/depth_comparison/

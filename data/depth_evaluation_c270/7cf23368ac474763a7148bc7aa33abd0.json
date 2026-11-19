@@ -1,0 +1,42 @@
+{
+  "sample_id": "7cf23368ac474763a7148bc7aa33abd0",
+  "scene": "나무색 벽, 중앙",
+  "ground_truth_m": 0.8,
+  "prediction_m": 0.9973775025624995,
+  "sequence": 6668,
+  "run_id": 3802636401079940,
+  "encoder": "depthpro",
+  "input_size": 1536,
+  "roi": "[279, 154, 162, 116]",
+  "measurement_kind": "selected_target",
+  "metric_validated": false,
+  "distance_kind": "camera_ray_range",
+  "prediction_depth_z_m": 0.9951171875,
+  "prediction_ray_range_m": 0.9973775025624995,
+  "region_summary": {
+    "roi": [
+      279,
+      154,
+      162,
+      116
+    ],
+    "valid_pixels": 18792,
+    "total_pixels": 18792,
+    "model_target_m": 0.9951171875,
+    "p10_m": 0.98828125,
+    "p90_m": 1.001953125,
+    "model_depth_z_m": 0.9951171875,
+    "model_ray_range_m": 0.9973775025624995,
+    "range_p10_m": 0.9911593885384988,
+    "range_p90_m": 1.0111091976044453,
+    "mixed_depth_warning": false,
+    "wall_calibration_applied": false,
+    "metric_validated": false,
+    "usable_for_grasp": false,
+    "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+  },
+  "calibration_id": "",
+  "profile_id": "depthpro_estimated_intrinsics_v1",
+  "focal_px_used": 802.0863037109375,
+  "estimated_intrinsics": true
+}

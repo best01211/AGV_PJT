@@ -1,0 +1,9 @@
+{
+  "input": "lens_undistorted_300x300",
+  "distance_kind": "camera_ray_range",
+  "max_distance_m": 1.0,
+  "max_absolute_error_m": 0.01,
+  "reference_point": "camera lens center",
+  "full_range_verified": false,
+  "usable_for_grasp": false
+}

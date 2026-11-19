@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source": "Logitech C270, ArUco third capture set",
+  "model": "opencv_pinhole",
+  "image_width": 640,
+  "image_height": 480,
+  "camera_matrix": [
+    [
+      709.2829989148757,
+      0.0,
+      325.92200887061824
+    ],
+    [
+      0.0,
+      703.9200188169239,
+      252.42664286775687
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "distortion": [
+    0.049875248063749114,
+    0.8999172805967258,
+    0.0058491233703871605,
+    -0.0010048732831136997,
+    -3.6515777625443966
+  ],
+  "alpha": 0,
+  "rms_reprojection_px": 0.7352195253804599,
+  "per_view_reprojection_px": {
+    "view-5f9a81c357a240618faa3176c195452d.jpg": 0.7215217351913452,
+    "view-7fde645889c645ccbdf1c47302c3da26.jpg": 0.8163323402404785,
+    "view-cafb2200627c4364a5a13498ca847db5.jpg": 0.6424670815467834,
+    "view-5223de83c24d4a43ac3393b9f2466b07.jpg": 0.9766367077827454,
+    "view-4f39fa9ce9be4fb29edb469ee09d4c1b.jpg": 0.647009551525116,
+    "view-683ae5e754e546f893bb19897d14b57a.jpg": 0.8102062344551086,
+    "view-75117afc11b844b7826629a6c510ba4a.jpg": 1.0121487379074097,
+    "view-40655ff8fb564ea18226a1c8ba33ec84.jpg": 0.6011595129966736,
+    "view-8bf20b371b69457b9abc0fd2f34a54ef.jpg": 0.5493226647377014,
+    "view-49dde3a57aad4b54a2c8a8cacf345810.jpg": 0.5909379124641418,
+    "view-24e3b2679dee4aa9ae10f9c5929d4002.jpg": 0.5697441101074219,
+    "view-0c7bc4dca4994586a23c3b600eca3837.jpg": 0.704647421836853
+  },
+  "leave_one_out_fx_px": [
+    704.5181794205018,
+    716.7036329341352
+  ],
+  "metric_depth_validated": false
+}

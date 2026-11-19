@@ -1,0 +1,7 @@
+# 별도 Depth Python 환경에서 설치. GPU torch/torchvision은 호환되는 기존 설치를 재사용할 수 있습니다.
+numpy>=2,<3
+opencv-python-headless>=4.10,<6
+torch>=2.6
+torchvision>=0.21
+timm==0.9.16
+pillow-heif>=1.8,<2

@@ -1,0 +1,16 @@
+{
+  "x": 320,
+  "y": 240,
+  "valid_fraction": 1.0,
+  "range_cm": 72.72120666503906,
+  "matcher": "FoundationStereo",
+  "metric_scale": 1.0,
+  "depth_z_cm": 66.45631408691406,
+  "pair_id": "7c4a5d24fa79458883895ab271bfcdf6",
+  "grab_gap_ms": 0.023333999706665054,
+  "elapsed_ms": 4664,
+  "receive_ms": 505,
+  "compute_ms": 2009,
+  "actual_cm": 70.0,
+  "error_cm": 2.7212066650390625
+}

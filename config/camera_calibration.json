@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source": "CALIBRATION_NOTION.pdf page 2, rounded transcription",
+  "original_npz_available": false,
+  "model": "opencv_pinhole",
+  "image_width": 300,
+  "image_height": 300,
+  "camera_matrix": [[149.6753, 0.0, 147.9137], [0.0, 199.2906, 154.0826], [0.0, 0.0, 1.0]],
+  "distortion": [-0.301191, 0.090162, -0.000561, -0.002133, -0.012141],
+  "alpha": 0,
+  "rms_reprojection_px": 0.334,
+  "metric_depth_validated": false
+}

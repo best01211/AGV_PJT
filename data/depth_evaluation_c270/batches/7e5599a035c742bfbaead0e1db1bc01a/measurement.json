@@ -1,0 +1,239 @@
+{
+  "batch_id": "7e5599a035c742bfbaead0e1db1bc01a",
+  "run_id": 4324100216552587,
+  "anchor_sequence": 712,
+  "scene": "나무색 벽, 중앙",
+  "ground_truth_m": 0.7,
+  "distance_kind": "camera_ray_range",
+  "roi": [
+    273,
+    160,
+    94,
+    84
+  ],
+  "profile_id": "depthpro_estimated_intrinsics_v1",
+  "calibration_id": "",
+  "focal_px_used": 609.0258178710938,
+  "metric_validated": false,
+  "frames": [
+    {
+      "sequence": 739,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2423",
+      "prediction_m": 0.814588979958923,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.81201171875,
+        "p10_m": 0.80712890625,
+        "p90_m": 0.818359375,
+        "model_depth_z_m": 0.81201171875,
+        "model_ray_range_m": 0.814588979958923,
+        "range_p10_m": 0.8124826356871,
+        "range_p90_m": 0.8190278780461238,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 742,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2431",
+      "prediction_m": 0.7934650518335223,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.79052734375,
+        "p10_m": 0.78515625,
+        "p90_m": 0.796875,
+        "model_depth_z_m": 0.79052734375,
+        "model_ray_range_m": 0.7934650518335223,
+        "range_p10_m": 0.7909171824294245,
+        "range_p90_m": 0.7977087727806954,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 745,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2438",
+      "prediction_m": 0.810418371674583,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.8076171875,
+        "p10_m": 0.8017578125,
+        "p90_m": 0.8134765625,
+        "model_depth_z_m": 0.8076171875,
+        "model_ray_range_m": 0.810418371674583,
+        "range_p10_m": 0.8074197536217033,
+        "range_p90_m": 0.8144212198482192,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 748,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2446",
+      "prediction_m": 0.7922264003705688,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.78955078125,
+        "p10_m": 0.78466796875,
+        "p90_m": 0.79541015625,
+        "model_depth_z_m": 0.78955078125,
+        "model_ray_range_m": 0.7922264003705688,
+        "range_p10_m": 0.7900827371629809,
+        "range_p90_m": 0.7966393635757785,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 751,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2454",
+      "prediction_m": 0.810140586676608,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.80712890625,
+        "p10_m": 0.80126953125,
+        "p90_m": 0.8134765625,
+        "model_depth_z_m": 0.80712890625,
+        "model_ray_range_m": 0.810140586676608,
+        "range_p10_m": 0.8068859663602823,
+        "range_p90_m": 0.8142136842224116,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 754,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2462",
+      "prediction_m": 0.7600021662206082,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.75732421875,
+        "p10_m": 0.75244140625,
+        "p90_m": 0.76318359375,
+        "model_depth_z_m": 0.75732421875,
+        "model_ray_range_m": 0.7600021662206082,
+        "range_p10_m": 0.7574196523610954,
+        "range_p90_m": 0.7639626393621559,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 757,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2470",
+      "prediction_m": 0.7834614241813329,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.78125,
+        "p10_m": 0.775390625,
+        "p90_m": 0.78662109375,
+        "model_depth_z_m": 0.78125,
+        "model_ray_range_m": 0.7834614241813329,
+        "range_p10_m": 0.7807377691030419,
+        "range_p90_m": 0.7874603266510659,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    },
+    {
+      "sequence": 760,
+      "capture_id": "c3d64a0ff9e44608a416148d1309c88f:2478",
+      "prediction_m": 0.782578435000095,
+      "region_summary": {
+        "roi": [
+          273,
+          160,
+          94,
+          84
+        ],
+        "valid_pixels": 7896,
+        "total_pixels": 7896,
+        "model_target_m": 0.77978515625,
+        "p10_m": 0.7744140625,
+        "p90_m": 0.78564453125,
+        "model_depth_z_m": 0.77978515625,
+        "model_ray_range_m": 0.782578435000095,
+        "range_p10_m": 0.779978330588811,
+        "range_p90_m": 0.7865357363944249,
+        "mixed_depth_warning": false,
+        "wall_calibration_applied": false,
+        "metric_validated": false,
+        "usable_for_grasp": false,
+        "note": "Selected object ROI; model estimate only. A narrow spread is not proof of correct absolute distance."
+      }
+    }
+  ],
+  "median_m": 0.7928457261020456,
+  "min_m": 0.7600021662206082,
+  "max_m": 0.814588979958923
+}

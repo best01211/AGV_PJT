@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/apple/ml-depth-pro",
+  "commit": "9e65e4dbe9568d23c546fcec53302b10445e109e",
+  "checkpoint_source": "https://ml-site.cdn-apple.com/models/depth-pro/depth_pro.pt",
+  "sha256": "3eb35ca68168ad3d14cb150f8947a4edf85589941661fdb2686259c80685c0ce",
+  "input": "undistorted, virtual square-pixel image, calibrated focal length in pixels",
+  "additional_distance_fit": false,
+  "max_target_distance_m": 1.0,
+  "required_max_absolute_error_m": 0.01,
+  "test_set_passed": false,
+  "usable_for_grasp": false
+}

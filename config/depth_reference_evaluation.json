@@ -1,0 +1,11 @@
+{
+  "source": "CALIBRATION_NOTION.pdf page 3; grouped means, not original eight observations",
+  "prediction_type": "historical_one_point_scaled_estimate",
+  "historical_scale": 0.349421,
+  "groups": [
+    {"scene": "board", "ground_truth_m": 0.30, "prediction_m": 0.61, "count": 2},
+    {"scene": "board", "ground_truth_m": 0.50, "prediction_m": 0.79, "count": 2},
+    {"scene": "board", "ground_truth_m": 0.80, "prediction_m": 1.16, "count": 2},
+    {"scene": "wall", "ground_truth_m": 1.20, "prediction_m": 0.88, "count": 2}
+  ]
+}

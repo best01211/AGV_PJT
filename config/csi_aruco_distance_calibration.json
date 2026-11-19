@@ -1,0 +1,153 @@
+{
+  "image_size": [
+    640,
+    480
+  ],
+  "aruco_dictionary": "DICT_6X6_50",
+  "aruco_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "board_size_mm": [
+    192.5,
+    144.5
+  ],
+  "marker_side_mm": 41.5,
+  "accepted_pairs": 12,
+  "left_camera_matrix": [
+    [
+      508.4739677861905,
+      0.0,
+      351.7626154296368
+    ],
+    [
+      0.0,
+      672.2918783048336,
+      223.03659799190314
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "left_distortion": [
+    -0.39883005853347203,
+    0.6068778051412334,
+    -0.00019192623912148973,
+    -0.0005926039018722325,
+    -1.1432702694399741
+  ],
+  "right_camera_matrix": [
+    [
+      527.7123777928247,
+      0.0,
+      322.5365018296856
+    ],
+    [
+      0.0,
+      698.055611745669,
+      169.71432916954126
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "right_distortion": [
+    -0.34780449451717127,
+    0.21311590263579588,
+    0.0005843462533235361,
+    0.0002540065760462222,
+    -0.2166479930909982
+  ],
+  "rotation": [
+    [
+      0.9997114745437551,
+      0.02301890248404142,
+      -0.006862783253254136
+    ],
+    [
+      -0.023136655672953352,
+      0.9995773210725126,
+      -0.017603248614114445
+    ],
+    [
+      0.006454675036138459,
+      0.017756951481865308,
+      0.9998214979906406
+    ]
+  ],
+  "translation_mm": [
+    -89.47209788444735,
+    3.140592528579032,
+    20.222413017447476
+  ],
+  "metric_scale": 0.9478587132094086,
+  "left_rms_px": 0.7075416255965757,
+  "right_rms_px": 0.8260467235545572,
+  "stereo_rms_px": 0.8180323231329802,
+  "fit_rectified_vertical_p95_px": 2.156007766723633,
+  "validation_alignment": {
+    "pairs": 1,
+    "raw_vertical_p95_px": 65.82315063476562,
+    "rectified_vertical_p95_px": 2.8353183269500732
+  },
+  "validation_pair": "pair-9f3c48550a4e49e5b637ae08c5cc30f1",
+  "range_scale_validation": {
+    "method": "median(actual_cm / unscaled_range_cm)",
+    "settings": {
+      "foundation_iterations": 8,
+      "foundation_input_scale": 0.75,
+      "rectify_alpha": 0.4
+    },
+    "fit_records": [
+      "measurement-2909f5c0af4e4f7288e167f1551db06f",
+      "measurement-d8f76bbc026948b3adfb0101c28bbbdb",
+      "measurement-3ef39cafbc284c748904fc2ddc7b4ea0",
+      "measurement-a64049af7473437c9ac444ee14ff38e2",
+      "measurement-1c7fa6f97d89401ea6902c63e0b46021",
+      "measurement-fc323be18eb94c4a813ca69240676bf8",
+      "measurement-6a31eec79bfd46faac6ee55ccc30ad74"
+    ],
+    "excluded_records": [
+      "measurement-b71dc916c8a243d58391cc138fc6788f",
+      "measurement-4fe96ee9d8354fd3ae7b3a12921b722e",
+      "measurement-88639330baaa43808d763c31af20ccf1",
+      "measurement-406c8773a4e34364bb1a00a2df1f51b2"
+    ],
+    "validation": [
+      {
+        "record": "measurement-a29a731d3d764f008e3e99f94dc3cd15",
+        "actual_cm": 40.0,
+        "before_cm": 41.98808670043945,
+        "after_cm": 39.798773830003626
+      },
+      {
+        "record": "measurement-731557fefc1f456fbb11a9eea4ca6985",
+        "actual_cm": 70.0,
+        "before_cm": 74.66715240478516,
+        "after_cm": 70.77391099741045
+      },
+      {
+        "record": "measurement-0c9b746c5633452aa68155eb161bc769",
+        "actual_cm": 100.0,
+        "before_cm": 106.14958190917969,
+        "after_cm": 100.61480611615178
+      }
+    ],
+    "mae_before_cm": 4.268273671468099,
+    "mae_after_cm": 0.529981094519537
+  }
+}
